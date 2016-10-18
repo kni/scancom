@@ -14,7 +14,7 @@ signature SCANCOM = sig
   val takeTail   : (string, 'cs) Scanner
 
   val pure   : 'a -> ('a, 'cs) Scanner
-  val fmap   : ('cs -> 'a) -> ('cs, 'cs) Scanner -> ('a, 'cs) Scanner
+  val fmap   : ('a -> 'b) -> ('a, 'cs) Scanner -> ('b, 'cs) Scanner
   val bind   : ('a, 'cs) Scanner -> ('a -> ('b, 'cs) Scanner) -> ('b, 'cs) Scanner
   val apR    : ('a, 'cs) Scanner -> ('b, 'cs) Scanner -> ('b, 'cs) Scanner
   val apL    : ('a, 'cs) Scanner -> ('b, 'cs) Scanner -> ('a, 'cs) Scanner
@@ -22,7 +22,7 @@ signature SCANCOM = sig
   val choice : ('a, 'cs) Scanner list -> ('a, 'cs) Scanner
   val many   : ('a, 'cs) Scanner -> ('a list, 'cs) Scanner
 
-  val <$> : ('cs -> 'a) * ('cs, 'cs) Scanner -> ('a, 'cs) Scanner
+  val <$> : ('a -> 'b) * ('a, 'cs) Scanner -> ('b, 'cs) Scanner
   val >>= : ('a, 'cs) Scanner * ('a -> ('b, 'cs) Scanner) -> ('b, 'cs) Scanner
   val  *> : ('a, 'cs) Scanner * ('b, 'cs) Scanner -> ('b, 'cs) Scanner
   val <*  : ('a, 'cs) Scanner * ('b, 'cs) Scanner -> ('a, 'cs) Scanner
