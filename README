@@ -1,0 +1,17 @@
+Scancom - Scanner Combinators Library
+*************************************
+
+Scancom use
+
+ type ('a, 'cs) Scanner = (char, 'cs) StringCvt.reader -> ('a, 'cs) StringCvt.reader
+
+So you can use standard scanners (String.scan, Char.scan, Bool.scan, Int.scan, Real.scan, Word.scan, Date.scan) with scancom.
+
+
+For example see s* files.
+
+
+See also Sparcl (https://github.com/kni/sparcl), which use
+
+  datatype ('r, 'cs) Result = Done of 'r * 'cs | Partial | Fail
+      type ('r, 'cs) Parser = (char, 'cs) StringCvt.reader -> 'cs -> ('r, 'cs) Result

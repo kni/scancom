@@ -1,0 +1,4 @@
+$(SML_LIB)/basis/basis.mlb
+scancom.sml
+s.sml
+main.sml
