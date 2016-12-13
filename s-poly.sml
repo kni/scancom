@@ -1,2 +1,0 @@
-use "scancom.sml";
-use "s.sml";

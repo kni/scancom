@@ -8,7 +8,7 @@ Scancom use
 So you can use standard scanners (String.scan, Char.scan, Bool.scan, Int.scan, Real.scan, Word.scan, Date.scan) with scancom.
 
 
-For example see s* files.
+For example see t directory.
 
 
 See also Sparcl (https://github.com/kni/sparcl), which use

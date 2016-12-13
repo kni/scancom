@@ -1,4 +1,4 @@
 $(SML_LIB)/basis/basis.mlb
-scancom.sml
+../scancom.sml
 s.sml
 main.sml
