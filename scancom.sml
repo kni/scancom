@@ -11,6 +11,8 @@ signature SCANCOM = sig
   val takeBefore : string -> (string, 'cs) Scanner
   val takeInt    : (int, 'cs) Scanner
   val takeN      : int -> (string, 'cs) Scanner
+  val takeTill   : (char -> bool) -> (string, 'cs) Scanner
+  val takeWhile  : (char -> bool) -> (string, 'cs) Scanner
   val takeTail   : (string, 'cs) Scanner
 
   val pure   : 'a -> ('a, 'cs) Scanner
@@ -83,6 +85,34 @@ structure Scancom : SCANCOM = struct
             | SOME (c, strm) => doit (i - 1) (c::l) strm
     in
       doit n [] strm
+    end
+
+
+  fun takeTill f getc strm =
+    let
+      fun scan r getc strm =
+          case getc strm of
+              NONE => SOME (String.implode(List.rev r), strm)
+            | SOME (c, strm) =>
+                if f c
+                then SOME (String.implode(List.rev r), strm)
+                else scan (c::r) getc strm
+    in
+      scan [] getc strm
+    end
+
+
+  fun takeWhile f getc strm =
+    let
+      fun scan r getc strm =
+          case getc strm of
+              NONE => SOME (String.implode(List.rev r), strm)
+            | SOME (c, strm') =>
+                if f c
+                then scan (c::r) getc strm'
+                else SOME (String.implode(List.rev r), strm)
+    in
+      scan [] getc strm
     end
 
 

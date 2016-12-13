@@ -74,6 +74,41 @@ val scanRedis = takeStr "$" *> takeInt >>= (fn n => takeStr "\r\n" *> takeN n <*
 fun testRedis () = testResult (scanString scanRedis "$4\r\nINFO\r\nTAIL") (SOME "INFO") "testRedis"
 
 
+fun testTillAndWhile () = (
+    testResult ( scanString (takeTill Char.isSpace) "   a" )  (SOME "")    "takeTill ws";     (* SOME ""    *)
+    testResult ( scanString (takeTill Char.isSpace) "a" )     (SOME "a")   "takeTill";        (* SOME "a"   *)
+    testResult ( scanString (takeWhile Char.isSpace) "   a" ) (SOME "   ") "takeWhile ws";    (* SOME "   " *)
+    testResult ( scanString (takeWhile Char.isSpace) "a" )    (SOME "")    "takeWhile";       (* SOME ""    *)
+
+    testResult ( scanString takeTail "abcde" )                   (SOME "abcde") "takeTail test";
+    testResult ( scanString (takeWhile (fn c => true)) "abcde" ) (SOME "abcde") "takeTail takeWhile"
+  )
+
+
+
+local
+  fun takeBeforeAndIt s = takeBefore s *> takeN (String.size s)
+
+  val takeWS = takeWhile Char.isSpace
+
+  val scanner =
+    takeBeforeAndIt "charset" *>
+    takeWS *>
+    takeBeforeAndIt "=" *>
+    takeWS *>
+    takeTill (fn c => Char.isSpace c orelse c = #";")
+
+in
+  fun findCharset s =
+    case StringCvt.scanString scanner (String.map Char.toLower s) of
+         NONE => NONE
+       | SOME c => SOME (String.map Char.toUpper c)
+end
+
+fun testFindCharset () = (
+    testResult ( findCharset "text/html; charset=Utf-8" )      (SOME "UTF-8") "findCharset 1";
+    testResult ( findCharset "text/html; CharSet = Utf-8 ; " ) (SOME "UTF-8") "findCharset 2"
+)
 
 
 
@@ -81,7 +116,9 @@ fun sample () = (
     parseArgTestParts ();
     parseArgTest ();
     testCSV ();
-    testRedis ()
+    testRedis ();
+    testTillAndWhile();
+    testFindCharset()
 )
 
 
