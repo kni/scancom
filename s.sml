@@ -20,53 +20,70 @@ fun scanSubstring cvt s =
   end
 
 
-(*
-local
-  fun showResult r = case r of SOME s => print ("SOME " ^ s ^ "\n") | NONE => print ("NONE\n")
-in
 
-  val r = scanString (takeStr "--") "--abcde-=*xyz"
-  val _ = showResult r
+fun showResult r = case r of SOME s => print ("SOME " ^ s ^ "\n") | NONE => print ("NONE\n")
 
-  val r = scanString (takeBefore "-=*") "abcde-=*xyz"
-  val _ = showResult r
 
-  val r = scanString (takeStr "-=*") "-=*xyz"
-  val _ = showResult r
+fun compareResult (SOME r1) (SOME r2) = r1 = r2
+  | compareResult _         _         = false
 
-  val r = scanString takeTail "xyz"
-  val _ = showResult r
 
-  val _ = print "----\n\n"
+fun testResult r expected name =
+  if compareResult r expected
+  then print ("OK - " ^ name ^ "\n" )
+  else print ("Not OK - " ^ name ^ "\n" )
 
-end
 
-val parseArg = (takeStr "--") *> (takeBefore "-=*") >>= (fn k => (takeStr "-=*") *> takeTail >>= (fn v => pure (k, v)))
-val r = scanString parseArg "--abcde-=*xyz"
-val _ = case r of SOME (k, v) => print ("SOME '" ^ k ^ "' is '" ^ v ^ "'\n") | NONE => print ("NONE\n")
-*)
+
+fun parseArgTestParts () = (
+  testResult (scanString (takeStr "--") "--abcde-=*xyz")   (SOME "--")    "takeStr";
+  testResult (scanString (takeBefore "-=*") "abcde-=*xyz") (SOME "abcde") "takeBefore";
+  testResult (scanString (takeStr "-=*") "-=*xyz")         (SOME "-=*")   "takeStr 2";
+  testResult (scanString (takeTail) "xyz")                 (SOME "xyz")   "takeTail"
+)
+
+
+fun parseArgTest () =
+  let
+    val parseArg = (takeStr "--") *> (takeBefore "-=*") >>= (fn k => (takeStr "-=*") *> takeTail >>= (fn v => pure (k, v)))
+  in
+    testResult (scanString (parseArg) "--abcde-=*xyz") (SOME ("abcde", "xyz")) "parseArg"
+  end
+
 
 
 (* http://stackoverflow.com/questions/14750444/how-can-i-parse-string-to-int-int-tuple-in-sml *)
 val scanLine = takeInt >>= (fn x => takeStr "," *> takeInt >>= (fn y => takeStr "\n" *> pure (x, y) ) )
 val scanList = many scanLine
 
-(*
-fun showListPair []         = ()
-  | showListPair ((x,y)::t) = ( print ((Int.toString x) ^ " " ^ (Int.toString y) ^ "\n") ; showListPair t )
+fun testCSV () =
+  let
+    fun showListPair []         = ()
+      | showListPair ((x,y)::t) = ( print ((Int.toString x) ^ " " ^ (Int.toString y) ^ "\n") ; showListPair t )
 
-val r = scanString scanList "4,5\n2,3\n-"
-val _ = case r of NONE => print ("NONE\n") | SOME l => ( print ("SOME\n") ; showListPair l )
-*)
+    val r = scanString scanList "4,5\n2,3\n-"
+  in
+    testResult r (SOME [(4, 5), (2, 3)]) "testCSV"
+    (* ; case r of NONE => print ("NONE\n") | SOME l => ( print ("SOME\n") ; showListPair l ) *)
+  end
 
 
 
 val scanRedis = takeStr "$" *> takeInt >>= (fn n => takeStr "\r\n" *> takeN n <* takeStr "\r\n")
 
-(*
-val r = scanString scanRedis "$4\r\nINFO\r\nTAIL"
-val _ = case r of NONE => print ("NONE\n") | SOME cmd => print ("SOME " ^ cmd ^ "\n")
-*)
+fun testRedis () = testResult (scanString scanRedis "$4\r\nINFO\r\nTAIL") (SOME "INFO") "testRedis"
+
+
+
+
+
+fun sample () = (
+    parseArgTestParts ();
+    parseArgTest ();
+    testCSV ();
+    testRedis ()
+)
+
 
 
 fun runBench name n f s =
@@ -86,7 +103,7 @@ end
 val N = 10000000
 val sfull = Substring.full
 
-fun main () = (
+fun benckmark () = (
   print "Run Benckmark...\n";
   runBench "Bench scanRedis, String   " N (scanString scanRedis)           "$4\r\nINFO\r\nTAIL";
   runBench "Bench CSV,       String   " N (scanString scanList)            "4,5\n2,3\n-"
@@ -94,4 +111,10 @@ fun main () = (
   runBench "Bench scanRedis, Substring" N (scanSubstring scanRedis) (sfull "$4\r\nINFO\r\nTAIL");
   runBench "Bench CSV,       Substring" N (scanSubstring scanList)  (sfull "4,5\n2,3\n-")
   *)
+  )
+
+
+fun main () = (
+    sample ()
+    (* ; benckmark () *)
   )
