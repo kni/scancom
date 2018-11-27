@@ -80,8 +80,8 @@ fun testTillAndWhile () = (
     testResult ( scanString (takeWhile Char.isSpace) "   a" ) (SOME "   ") "takeWhile ws";    (* SOME "   " *)
     testResult ( scanString (takeWhile Char.isSpace) "a" )    (SOME "")    "takeWhile";       (* SOME ""    *)
 
-    testResult ( scanString takeTail "abcde" )                   (SOME "abcde") "takeTail test";
-    testResult ( scanString (takeWhile (fn c => true)) "abcde" ) (SOME "abcde") "takeTail takeWhile"
+    testResult ( scanString (takeTill  (fn c => c =  #"/") *> takeTail) "abc/def" ) (SOME "/def") "takeTail  and takeTail";
+    testResult ( scanString (takeWhile (fn c => c <> #"/") *> takeTail) "abc/def" ) (SOME "/def") "takeWhile and takeTail"
   )
 
 

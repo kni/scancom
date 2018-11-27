@@ -93,10 +93,10 @@ structure Scancom : SCANCOM = struct
       fun scan r getc strm =
           case getc strm of
               NONE => SOME (String.implode(List.rev r), strm)
-            | SOME (c, strm) =>
+            | SOME (c, strm') =>
                 if f c
                 then SOME (String.implode(List.rev r), strm)
-                else scan (c::r) getc strm
+                else scan (c::r) getc strm'
     in
       scan [] getc strm
     end
