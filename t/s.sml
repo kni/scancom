@@ -87,17 +87,16 @@ fun testTillAndWhile () = (
 
 
 local
-  fun takeBeforeAndIt s = takeBefore s *> takeN (String.size s)
-
   val takeWS = takeWhile Char.isSpace
 
   val scanner =
-    takeBeforeAndIt "charset" *>
+    takeStr "charset" *>
     takeWS *>
     takeStr "=" *>
     takeWS *>
     takeTill (fn c => Char.isSpace c orelse c = #";")
 
+  val scanner = find scanner
 in
   fun findCharset s =
     case StringCvt.scanString scanner (String.map Char.toLower s) of
