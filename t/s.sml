@@ -94,7 +94,7 @@ local
   val scanner =
     takeBeforeAndIt "charset" *>
     takeWS *>
-    takeBeforeAndIt "=" *>
+    takeStr "=" *>
     takeWS *>
     takeTill (fn c => Char.isSpace c orelse c = #";")
 

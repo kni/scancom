@@ -16,6 +16,7 @@ signature SCANCOM = sig
   val takeTail   : (string, 'cs) Scanner
 
   val pure   : 'a -> ('a, 'cs) Scanner
+  val fail   : ('a, 'cs) Scanner
   val fmap   : ('a -> 'b) -> ('a, 'cs) Scanner -> ('b, 'cs) Scanner
   val bind   : ('a, 'cs) Scanner -> ('a -> ('b, 'cs) Scanner) -> ('b, 'cs) Scanner
   val apR    : ('a, 'cs) Scanner -> ('b, 'cs) Scanner -> ('b, 'cs) Scanner
@@ -130,6 +131,8 @@ structure Scancom : SCANCOM = struct
 
 
   fun pure s getc strm = SOME (s, strm)
+
+  fun fail getc strm = NONE
 
   fun fmap f p = fn getc => fn strm =>
     case p getc strm of
