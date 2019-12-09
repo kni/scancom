@@ -8,6 +8,7 @@ signature SCANCOM = sig
   type ('a, 'cs) Scanner = (char, 'cs) StringCvt.reader -> ('a, 'cs) StringCvt.reader
 
   val takeStr    : string -> (string, 'cs) Scanner
+  val takeStrI   : string -> (string, 'cs) Scanner
   val takeBefore : string -> (string, 'cs) Scanner
   val takeInt    : (int, 'cs) Scanner
   val takeN      : int -> (string, 'cs) Scanner
@@ -48,6 +49,15 @@ structure Scancom : SCANCOM = struct
                then compare s t getc strm
                else NONE
 
+  (* insensitive compare and return if match *)
+  fun compareI s []     getc strm = SOME (s, strm)
+    | compareI s (h::t) getc strm =
+        case getc strm of
+             NONE           => NONE
+           | SOME (c, strm) =>
+               if c = h orelse Char.toLower c = h
+               then compareI s t getc strm
+               else NONE
   in
 
   fun takeStr s =
@@ -55,6 +65,14 @@ structure Scancom : SCANCOM = struct
       val e = String.explode s
     in
       compare s e
+    end
+
+  (* insensitive *)
+  fun takeStrI s =
+    let
+      val e = map Char.toLower (String.explode s)
+    in
+      compareI s e
     end
 
 
