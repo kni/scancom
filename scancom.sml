@@ -50,13 +50,13 @@ structure Scancom : SCANCOM = struct
                else NONE
 
   (* insensitive compare and return if match *)
-  fun compareI s []     getc strm = SOME (s, strm)
-    | compareI s (h::t) getc strm =
+  fun compareI r []     getc strm = SOME (String.implode (List.rev r), strm)
+    | compareI r (h::t) getc strm =
         case getc strm of
              NONE           => NONE
            | SOME (c, strm) =>
                if c = h orelse Char.toLower c = h
-               then compareI s t getc strm
+               then compareI (c::r) t getc strm
                else NONE
   in
 
@@ -72,7 +72,7 @@ structure Scancom : SCANCOM = struct
     let
       val e = map Char.toLower (String.explode s)
     in
-      compareI s e
+      compareI [] e
     end
 
 

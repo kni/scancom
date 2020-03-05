@@ -113,6 +113,7 @@ fun testFindCharset () = (
 
 fun sample () = (
     parseArgTestParts ();
+    testResult ( scanString (takeStrI "abC") "aBcDe") (SOME "aBc") "takeStrI";
     parseArgTest ();
     testCSV ();
     testRedis ();
