@@ -1,25 +1,6 @@
 open Scancom
 
-datatype Index = Index of int
-
 val scanString = StringCvt.scanString
-
-
-fun scanSubstring cvt s =
-  let
-    val len = Substring.size s
-
-    fun rdr (Index i) =
-      if i = len
-      then NONE
-      else SOME (Substring.sub(s, i), Index(i+1))
-  in
-    case cvt rdr (Index 0) of
-         SOME (r, (Index i)) => SOME (r, Substring.triml i s )
-       | NONE                => NONE
-  end
-
-
 
 fun showResult r = case r of SOME s => print ("SOME " ^ s ^ "\n") | NONE => print ("NONE\n")
 
@@ -144,10 +125,6 @@ fun benckmark () = (
   print "Run Benckmark...\n";
   runBench "Bench scanRedis, String   " N (scanString scanRedis)           "$4\r\nINFO\r\nTAIL";
   runBench "Bench CSV,       String   " N (scanString scanList)            "4,5\n2,3\n-"
-  (*
-  runBench "Bench scanRedis, Substring" N (scanSubstring scanRedis) (sfull "$4\r\nINFO\r\nTAIL");
-  runBench "Bench CSV,       Substring" N (scanSubstring scanList)  (sfull "4,5\n2,3\n-")
-  *)
   )
 
 
