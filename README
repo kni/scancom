@@ -11,6 +11,9 @@ So you can use standard scanners (String.scan, Char.scan, Bool.scan, Int.scan, R
 For example see t directory.
 
 
+If you need find position (shift or line) see scancom-position.sml and t/pos.sml.
+
+
 See also Sparcl (https://github.com/kni/sparcl), which use
 
   datatype ('r, 'cs) Result = Done of 'r * 'cs | Partial | Fail
