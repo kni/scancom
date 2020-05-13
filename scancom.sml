@@ -9,8 +9,8 @@ signature SCANCOM = sig
 
   val takeStr     : string -> (string, 'cs) Scanner
   val takeStrI    : string -> (string, 'cs) Scanner
-  val takeBefore  : string -> (string, 'cs) Scanner
-  val takeBeforeI : string -> (string, 'cs) Scanner
+  val takeBefore  : string -> (string * string, 'cs) Scanner
+  val takeBeforeI : string -> (string * string, 'cs) Scanner
   val takeInt     : (int, 'cs) Scanner
   val takeN       : int -> (string, 'cs) Scanner
   val takeTill    : (char -> bool) -> (string, 'cs) Scanner
@@ -83,7 +83,7 @@ structure Scancom : SCANCOM = struct
 
       fun scan r getc strm =
         case compare s e getc strm of
-             SOME (_, _) => SOME (String.implode(List.rev r), strm)
+             SOME (s, strm) => SOME ((String.implode(List.rev r), s), strm)
            | NONE        =>
                 case getc strm of
                     NONE => NONE
@@ -100,7 +100,7 @@ structure Scancom : SCANCOM = struct
 
       fun scan r getc strm =
         case compareI [] e getc strm of
-             SOME (_, _) => SOME (String.implode(List.rev r), strm)
+             SOME (s, strm) => SOME ((String.implode(List.rev r), s), strm)
            | NONE        =>
                 case getc strm of
                     NONE => NONE

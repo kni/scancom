@@ -18,7 +18,7 @@ fun testResult r expected name =
 
 fun parseArgTestParts () = (
   testResult (scanString (takeStr "--") "--abcde-=*xyz")   (SOME "--")    "takeStr";
-  testResult (scanString (takeBefore "-=*") "abcde-=*xyz") (SOME "abcde") "takeBefore";
+  testResult (scanString (takeBefore "-=*") "abcde-=*xyz") (SOME ("abcde", "-=*")) "takeBefore";
   testResult (scanString (takeStr "-=*") "-=*xyz")         (SOME "-=*")   "takeStr 2";
   testResult (scanString (takeTail) "xyz")                 (SOME "xyz")   "takeTail"
 )
@@ -26,7 +26,7 @@ fun parseArgTestParts () = (
 
 fun parseArgTest () =
   let
-    val parseArg = (takeStr "--") *> (takeBefore "-=*") >>= (fn k => (takeStr "-=*") *> takeTail >>= (fn v => pure (k, v)))
+    val parseArg = (takeStr "--") *> (takeBefore "-=*") >>= (fn (k, _) => takeTail >>= (fn v => pure (k, v)))
   in
     testResult (scanString (parseArg) "--abcde-=*xyz") (SOME ("abcde", "xyz")) "parseArg"
   end
@@ -93,10 +93,10 @@ fun testFindCharset () = (
 
 
 fun sample () = (
-    testResult ( scanString (takeStr "abc") "abcDe") (SOME "abc") "takeStr";
-    testResult ( scanString (takeStrI "abC") "aBcDe") (SOME "aBc") "takeStrI";
-    testResult ( scanString (takeBefore "De") "abcDe") (SOME "abc") "takeBefore";
-    testResult ( scanString (takeBeforeI "dE") "aBcDe") (SOME "aBc") "takeBeforeI";
+    testResult ( scanString (takeStr "abc")    "abcDe") (SOME "abc") "takeStr";
+    testResult ( scanString (takeStrI "abC")   "aBcDe") (SOME "aBc") "takeStrI";
+    testResult ( scanString (takeBefore "De")  "abcDe") (SOME ("abc", "De")) "takeBefore";
+    testResult ( scanString (takeBeforeI "dE") "aBcDe") (SOME ("aBc", "De")) "takeBeforeI";
     parseArgTestParts ();
     parseArgTest ();
     testCSV ();
