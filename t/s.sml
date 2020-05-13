@@ -93,8 +93,11 @@ fun testFindCharset () = (
 
 
 fun sample () = (
-    parseArgTestParts ();
+    testResult ( scanString (takeStr "abc") "abcDe") (SOME "abc") "takeStr";
     testResult ( scanString (takeStrI "abC") "aBcDe") (SOME "aBc") "takeStrI";
+    testResult ( scanString (takeBefore "De") "abcDe") (SOME "abc") "takeBefore";
+    testResult ( scanString (takeBeforeI "dE") "aBcDe") (SOME "aBc") "takeBeforeI";
+    parseArgTestParts ();
     parseArgTest ();
     testCSV ();
     testRedis ();

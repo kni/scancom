@@ -7,14 +7,15 @@ infix 4 <*>
 signature SCANCOM = sig
   type ('a, 'cs) Scanner = (char, 'cs) StringCvt.reader -> ('a, 'cs) StringCvt.reader
 
-  val takeStr    : string -> (string, 'cs) Scanner
-  val takeStrI   : string -> (string, 'cs) Scanner
-  val takeBefore : string -> (string, 'cs) Scanner
-  val takeInt    : (int, 'cs) Scanner
-  val takeN      : int -> (string, 'cs) Scanner
-  val takeTill   : (char -> bool) -> (string, 'cs) Scanner
-  val takeWhile  : (char -> bool) -> (string, 'cs) Scanner
-  val takeTail   : (string, 'cs) Scanner
+  val takeStr     : string -> (string, 'cs) Scanner
+  val takeStrI    : string -> (string, 'cs) Scanner
+  val takeBefore  : string -> (string, 'cs) Scanner
+  val takeBeforeI : string -> (string, 'cs) Scanner
+  val takeInt     : (int, 'cs) Scanner
+  val takeN       : int -> (string, 'cs) Scanner
+  val takeTill    : (char -> bool) -> (string, 'cs) Scanner
+  val takeWhile   : (char -> bool) -> (string, 'cs) Scanner
+  val takeTail    : (string, 'cs) Scanner
 
   val pure   : 'a -> ('a, 'cs) Scanner
   val fail   : ('a, 'cs) Scanner
@@ -82,6 +83,23 @@ structure Scancom : SCANCOM = struct
 
       fun scan r getc strm =
         case compare s e getc strm of
+             SOME (_, _) => SOME (String.implode(List.rev r), strm)
+           | NONE        =>
+                case getc strm of
+                    NONE => NONE
+                  | SOME (c, strm) => scan (c::r) getc strm
+
+    in
+      scan []
+    end
+
+
+  fun takeBeforeI s =
+    let
+      val e = map Char.toLower (String.explode s)
+
+      fun scan r getc strm =
+        case compareI [] e getc strm of
              SOME (_, _) => SOME (String.implode(List.rev r), strm)
            | NONE        =>
                 case getc strm of
