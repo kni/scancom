@@ -42,7 +42,7 @@ fun testCSV () =
     fun showListPair []         = ()
       | showListPair ((x,y)::t) = ( print ((Int.toString x) ^ " " ^ (Int.toString y) ^ "\n") ; showListPair t )
 
-    val r = scanString scanList "4,5\n2,3\n-"
+    val r = scanString scanList "4,5\n2,3\n"
   in
     testResult r (SOME [(4, 5), (2, 3)]) "testCSV"
     (* ; case r of NONE => print ("NONE\n") | SOME l => ( print ("SOME\n") ; showListPair l ) *)
