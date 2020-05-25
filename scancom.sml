@@ -40,41 +40,54 @@ structure Scancom : SCANCOM = struct
   type ('a, 'cs) Scanner = (char, 'cs) StringCvt.reader -> ('a, 'cs) StringCvt.reader
 
   local
+
+  fun takeChar' s tc getc strm =
+        case getc strm of
+             NONE           => NONE
+           | SOME (c, strm) => if c = tc then SOME (s, strm) else NONE
+
+  fun takeCharI' tc getc strm =
+        case getc strm of
+             NONE           => NONE
+           | SOME (c, strm) =>
+               if c = tc orelse Char.toLower c = tc
+               then SOME (String.str c, strm)
+               else NONE
+
+
   (* compare and return if match *)
-  fun compare s []     getc strm = SOME (s, strm)
-    | compare s (h::t) getc strm =
+  fun takeStr' s []     getc strm = SOME (s, strm)
+    | takeStr' s (h::t) getc strm =
         case getc strm of
              NONE           => NONE
            | SOME (c, strm) =>
                if c = h
-               then compare s t getc strm
+               then takeStr' s t getc strm
                else NONE
 
   (* insensitive compare and return if match *)
-  fun compareI r []     getc strm = SOME (String.implode (List.rev r), strm)
-    | compareI r (h::t) getc strm =
+  fun takeStrI' r []     getc strm = SOME (String.implode (List.rev r), strm)
+    | takeStrI' r (h::t) getc strm =
         case getc strm of
              NONE           => NONE
            | SOME (c, strm) =>
                if c = h orelse Char.toLower c = h
-               then compareI (c::r) t getc strm
+               then takeStrI' (c::r) t getc strm
                else NONE
   in
 
   fun takeStr s =
-    let
-      val e = String.explode s
-    in
-      compare s e
-    end
+    if String.size s = 1
+    then takeChar' s (String.sub (s, 0))
+    else takeStr'  s (String.explode s)
+
 
   (* insensitive *)
   fun takeStrI s =
-    let
-      val e = map Char.toLower (String.explode s)
-    in
-      compareI [] e
-    end
+    if String.size s = 1
+    then takeCharI' (String.sub (s, 0))
+    else takeStrI' [] (map Char.toLower (String.explode s))
+
 
 
   fun takeBefore s =
@@ -82,7 +95,7 @@ structure Scancom : SCANCOM = struct
       val e = String.explode s
 
       fun scan r getc strm =
-        case compare s e getc strm of
+        case takeStr' s e getc strm of
              SOME (s, strm) => SOME ((String.implode(List.rev r), s), strm)
            | NONE        =>
                 case getc strm of
@@ -99,7 +112,7 @@ structure Scancom : SCANCOM = struct
       val e = map Char.toLower (String.explode s)
 
       fun scan r getc strm =
-        case compareI [] e getc strm of
+        case takeStrI' [] e getc strm of
              SOME (s, strm) => SOME ((String.implode(List.rev r), s), strm)
            | NONE        =>
                 case getc strm of
