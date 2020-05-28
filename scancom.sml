@@ -27,6 +27,7 @@ signature SCANCOM = sig
   val choice : ('a, 'cs) Scanner list -> ('a, 'cs) Scanner
   val many   : ('a, 'cs) Scanner -> ('a list, 'cs) Scanner
   val find   : ('a, 'cs) Scanner -> ('a, 'cs) Scanner
+  val search : ('a, 'cs) Scanner -> ((string * 'a), 'cs) Scanner
 
   val <$> : ('a -> 'b) * ('a, 'cs) Scanner -> ('b, 'cs) Scanner
   val >>= : ('a, 'cs) Scanner * ('a -> ('b, 'cs) Scanner) -> ('b, 'cs) Scanner
@@ -237,6 +238,21 @@ structure Scancom : SCANCOM = struct
           case getc strm of
               SOME (_, strm) => find p getc strm
             | NONE => NONE
+
+
+  fun search p getc strm =
+    let
+      fun scan b p getc strm =
+        case p getc strm of
+            SOME (r, t) => SOME ((String.implode(List.rev b), r), t)
+          | NONE =>
+              case getc strm of
+                  SOME (c, strm) => scan (c::b) p getc strm
+                | NONE => NONE
+    in
+      scan [] p getc strm
+    end
+
 
   fun f  <$> p  = fmap f p
   fun p  >>= pg = bind p pg
