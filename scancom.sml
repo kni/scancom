@@ -97,7 +97,7 @@ structure Scancom : SCANCOM = struct
 
       fun scan r getc strm =
         case takeStr' s e getc strm of
-             SOME (s, strm) => SOME ((String.implode(List.rev r), s), strm)
+             SOME (s, strm) => SOME ((String.implode (List.rev r), s), strm)
            | NONE        =>
                 case getc strm of
                     NONE => NONE
@@ -114,7 +114,7 @@ structure Scancom : SCANCOM = struct
 
       fun scan r getc strm =
         case takeStrI' [] e getc strm of
-             SOME (s, strm) => SOME ((String.implode(List.rev r), s), strm)
+             SOME (s, strm) => SOME ((String.implode (List.rev r), s), strm)
            | NONE        =>
                 case getc strm of
                     NONE => NONE
@@ -130,52 +130,52 @@ structure Scancom : SCANCOM = struct
 
   fun takeN n getc strm =
     let
-      fun doit 0 l strm = SOME (String.implode(List.rev l), strm)
-        | doit i l strm =
+      fun scan 0 l strm = SOME (String.implode (List.rev l), strm)
+        | scan i l strm =
           case getc strm of
               NONE => NONE
-            | SOME (c, strm) => doit (i - 1) (c::l) strm
+            | SOME (c, strm) => scan (i - 1) (c::l) strm
     in
-      doit n [] strm
+      scan n [] strm
     end
 
 
   fun takeTill f getc strm =
     let
-      fun scan r getc strm =
+      fun scan r strm =
           case getc strm of
-              NONE => SOME (String.implode(List.rev r), strm)
+              NONE => SOME (String.implode (List.rev r), strm)
             | SOME (c, strm') =>
                 if f c
-                then SOME (String.implode(List.rev r), strm)
-                else scan (c::r) getc strm'
+                then SOME (String.implode (List.rev r), strm)
+                else scan (c::r) strm'
     in
-      scan [] getc strm
+      scan [] strm
     end
 
 
   fun takeWhile f getc strm =
     let
-      fun scan r getc strm =
+      fun scan r strm =
           case getc strm of
-              NONE => SOME (String.implode(List.rev r), strm)
+              NONE => SOME (String.implode (List.rev r), strm)
             | SOME (c, strm') =>
                 if f c
-                then scan (c::r) getc strm'
-                else SOME (String.implode(List.rev r), strm)
+                then scan (c::r) strm'
+                else SOME (String.implode (List.rev r), strm)
     in
-      scan [] getc strm
+      scan [] strm
     end
 
 
   fun takeTail getc strm =
     let
-      fun scan r getc strm =
+      fun scan r strm =
           case getc strm of
-              NONE => SOME (String.implode(List.rev r), strm)
-            | SOME (c, strm) => scan (c::r) getc strm
+              NONE => SOME (String.implode (List.rev r), strm)
+            | SOME (c, strm) => scan (c::r) strm
     in
-      scan [] getc strm
+      scan [] strm
     end
 
 
@@ -223,7 +223,7 @@ structure Scancom : SCANCOM = struct
             | NONE        => go ps
     in go ps end
 
-  fun many p = fn getc => fn strm =>
+  fun many p getc strm =
     case p getc strm of
         NONE => SOME ([], strm)
       | SOME (x, strm) =>
@@ -242,15 +242,15 @@ structure Scancom : SCANCOM = struct
 
   fun search p getc strm =
     let
-      fun scan b p getc strm =
+      fun scan b p strm =
         case p getc strm of
-            SOME (r, t) => SOME ((String.implode(List.rev b), r), t)
+            SOME (r, strm) => SOME ((String.implode (List.rev b), r), strm)
           | NONE =>
               case getc strm of
-                  SOME (c, strm) => scan (c::b) p getc strm
+                  SOME (c, strm) => scan (c::b) p strm
                 | NONE => NONE
     in
-      scan [] p getc strm
+      scan [] p strm
     end
 
 
