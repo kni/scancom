@@ -1,7 +1,9 @@
 structure ScancomReplace :
 sig
- val replace     : (string, StringCvt.cs) Scancom.Scanner -> string -> string
- val replaceMany : (string, StringCvt.cs) Scancom.Scanner -> string -> string
+  val replace     : (string, StringCvt.cs) Scancom.Scanner -> string -> string
+  val replaceMany : (string, StringCvt.cs) Scancom.Scanner -> string -> string
+
+  val chomp : string -> string
 end
 =
 struct
@@ -22,6 +24,16 @@ fun replaceMany p s =
       (fn r => (takeTail >>= (fn t => pure (String.concat r ^ t))))
   in
     Option.valOf (StringCvt.scanString scanner s)
+  end
+
+
+fun chomp s =
+  let
+    val size = String.size s
+  in
+    if size > 0 andalso String.sub (s, size - 1) = #"\n"
+    then String.substring (s, 0, size - 1)
+    else s
   end
 
 end
