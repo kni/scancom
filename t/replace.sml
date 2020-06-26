@@ -14,4 +14,8 @@ val _ = testResult (replace     scanner "abc de fgh ABC De FGH") "abc DE fgh ABC
 val _ = testResult (replaceMany scanner "abc de fgh ABC De FGH") "abc DE fgh ABC DE FGH" "replaceMany"
 
 
+val _ = testResult (foldWS     "  Hello.\n Bye.  ")  "Hello. Bye."  "foldWS"
+val _ = testResult (foldWSEdge "  Hello.\n Bye.  ") " Hello. Bye. " "foldWSEdge"
+
+
 val _ = testResult (chomp "foo\n") "foo" "chomp"
