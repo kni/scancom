@@ -47,11 +47,11 @@ structure Scancom : SCANCOM = struct
              NONE           => NONE
            | SOME (c, strm) => if c = tc then SOME (s, strm) else NONE
 
-  fun takeCharI' tc getc strm =
+  fun takeCharI' (l, u) getc strm =
         case getc strm of
              NONE           => NONE
            | SOME (c, strm) =>
-               if c = tc orelse Char.toLower c = tc
+               if c = l orelse c = u
                then SOME (String.str c, strm)
                else NONE
 
@@ -67,12 +67,12 @@ structure Scancom : SCANCOM = struct
                else NONE
 
   (* insensitive compare and return if match *)
-  fun takeStrI' r []     getc strm = SOME (String.implode (List.rev r), strm)
-    | takeStrI' r (h::t) getc strm =
+  fun takeStrI' r []          getc strm = SOME (String.implode (List.rev r), strm)
+    | takeStrI' r ((l, u)::t) getc strm =
         case getc strm of
              NONE           => NONE
            | SOME (c, strm) =>
-               if c = h orelse Char.toLower c = h
+               if c = l orelse c = u
                then takeStrI' (c::r) t getc strm
                else NONE
   in
@@ -86,8 +86,8 @@ structure Scancom : SCANCOM = struct
   (* insensitive *)
   fun takeStrI s =
     if String.size s = 1
-    then takeCharI' (String.sub (s, 0))
-    else takeStrI' [] (map Char.toLower (String.explode s))
+    then let val c = String.sub (s, 0) in takeCharI' (Char.toLower c, Char.toUpper c) end
+    else takeStrI' [] (map (fn c => (Char.toLower c, Char.toUpper c)) (String.explode s))
 
 
 
@@ -110,7 +110,7 @@ structure Scancom : SCANCOM = struct
 
   fun takeBeforeI s =
     let
-      val e = map Char.toLower (String.explode s)
+      val e = map (fn c => (Char.toLower c, Char.toUpper c)) (String.explode s)
 
       fun scan r getc strm =
         case takeStrI' [] e getc strm of
