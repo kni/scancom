@@ -205,14 +205,14 @@ structure Scancom : SCANCOM = struct
         SOME (r1, t1) => (case p2 getc t1 of
                               SOME (r2, t2) => SOME (r1, t2)
                             | NONE          => NONE)
-      | NONE        => NONE
+      | NONE          => NONE
 
   fun ap p1 p2 = fn getc => fn strm =>
     case p1 getc strm of
         SOME (r1, t1) => (case p2 getc t1 of
                               SOME (r2, t2) => SOME ((r1 r2), t2)
                             | NONE          => NONE)
-      | NONE        => NONE
+      | NONE          => NONE
 
   fun choice ps = fn getc => fn strm =>
     let

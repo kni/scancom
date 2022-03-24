@@ -10,6 +10,7 @@ s_mlton: ../scancom.sml s.sml main.sml s.mlb
 
 test:
 	poly --script t.sml
+	poly --script replace.sml
 	poly --script pos.sml
 	poly --script words.sml
 	poly --script solid.sml

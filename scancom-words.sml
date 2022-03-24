@@ -30,8 +30,8 @@ fun findManyPos cvt s =
     case cvt rdr (Index p) of
         SOME (r, (Index i)) =>
           if p < len
-          then doit (p + 1) ((r, p, i)::rs)
-          else SOME ((r, p, i)::rs)
+          then doit (p + 1) ((r, p, i - p)::rs)
+          else SOME ((r, p, i - p)::rs)
       | NONE =>
           if p < len
           then doit (p + 1) rs
