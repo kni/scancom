@@ -16,5 +16,5 @@ fun testResult r expected name =
 val text = String.concat ["aaa", "bbb", "ccc", "ddd", "eee", "fff", "hhh", "ddd", "ccc", "zzz"]
 val scanner = mixture ["ccc", "ddd"]
 
-val r = SOME [(["ccc", "ddd"], 6, 12), (["ddd", "ccc"], 21, 27)]
+val r = SOME [(["ccc", "ddd"], 6, 6), (["ddd", "ccc"], 21, 6)]
 val _ = testResult (findManyShift scanner text) r "mixture"
