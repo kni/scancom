@@ -28,3 +28,9 @@ val text = Vector.fromList ["aaa", "bbb", "ccc", "xxx", "ddd", "eee", "fff", "hh
 val scanner = mixtureSkip ["ccc", "ddd"]
 val r = SOME [(["ccc", "ddd"], 2, 3), (["ddd", "ccc"], 8, 2)]
 val _ = testResult (findManyPos scanner text) r "mixtureSkip"
+
+
+val text = Vector.fromList ["abc", "abc", "abc", "abc", "abc", "abc"]
+val scanner = mixtureSkip ["abc", "abc"]
+val r = SOME [(["abc", "abc"], 0, 2), (["abc", "abc"], 2, 2), (["abc", "abc"], 4, 2)]
+val _ = testResult (findManyPos scanner text) r "mixtureSkip: no overlapping"
