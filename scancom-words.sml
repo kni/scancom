@@ -82,16 +82,17 @@ in
   fun mixture s = mixture' s []
 
 
-  fun mixtureSkip' [] skip r getc strm = SOME (List.rev r, strm)
-    | mixtureSkip' s  skip r getc strm =
+  fun mixtureSkip' [] skip first r getc strm = SOME (List.rev r, strm)
+    | mixtureSkip' s  skip first r getc strm =
         case getc strm of
              NONE           => NONE
            | SOME (c, strm) =>
                case removeFromList (c, s) of
-                   NONE   => if skip then mixtureSkip' s false r getc strm else NONE
-                 | SOME t => mixtureSkip' t true (c::r) getc strm
+                   NONE   => if first = (SOME c) then NONE else
+                             if skip then mixtureSkip' s false first r getc strm else NONE
+                 | SOME t => mixtureSkip' t true (case first of NONE => SOME c | SOME _ => first) (c::r) getc strm
 
-  fun mixtureSkip s = mixtureSkip' s false []
+  fun mixtureSkip s = mixtureSkip' s false NONE []
 
 end
 

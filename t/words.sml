@@ -34,3 +34,25 @@ val text = Vector.fromList ["abc", "abc", "abc", "abc", "abc", "abc"]
 val scanner = mixtureSkip ["abc", "abc"]
 val r = SOME [(["abc", "abc"], 0, 2), (["abc", "abc"], 2, 2), (["abc", "abc"], 4, 2)]
 val _ = testResult (findManyPos scanner text) r "mixtureSkip: no overlapping"
+
+
+
+
+(*
+Шукаємо найкращій збіг.
+Якщо знайдено слово, яке знайдено до того і є першим серед знайдених,
+то починати пошук зі зсувом на одну позицію.
+Це потрібно щоб в "xxx car yyy bike car bus zzz" для ключових слів "bike car bus" знайти
+"bike car bus", а не "car yyy bike car bus".
+*)
+
+val text = Vector.fromList ["xxx", "car", "yyy", "bike", "car", "bus", "zzz"]
+val scanner = mixtureSkip ["bike", "car", "bus"]
+val r = findManyPos scanner text
+val e = SOME [(["bike", "car", "bus"], 3, 3)]
+val _ = testResult r e "mixtureSkip: fold"
+
+val scanner = mixtureSkip ["bike", "car", "car", "bus"]
+val r = findManyPos scanner text
+val e = SOME [(["car", "bike", "car", "bus"], 1, 5)]
+val _ = testResult r e "mixtureSkip: fold duble"
