@@ -26,6 +26,21 @@ val _ = testResult r e "mixture"
 
 val text = String.concat ["abc", "abc", "abc", "abc", "abc", "abc"]
 val scanner = mixture ["abc", "abc"]
-val e = SOME [(["abc", "abc"], 0, 6), (["abc", "abc"], 6, 6), ([ "abc", "abc"], 12, 6)]
+val e = SOME [(["abc", "abc"], 0, 6), (["abc", "abc"], 6, 6), (["abc", "abc"], 12, 6)]
 val r = findManyShift scanner text
 val _ = testResult r e "mixture: no overlapping"
+
+
+val text = "abc"
+val scanner = mixture []
+val e = SOME [([], 0, 0), ([], 1, 0), ([], 2, 0), ([], 3, 0)]
+val r = findManyShift scanner text
+val _ = testResult r e "mixture: search empty string"
+
+
+
+val text = "abc"
+val scanner = mixture ["abc"]
+val e = SOME [(["abc"], 0, 3)]
+val r = findManyShift scanner text
+val _ = testResult r e "mixture: one"
