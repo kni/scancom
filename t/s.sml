@@ -6,6 +6,7 @@ fun showResult r = case r of SOME s => print ("SOME " ^ s ^ "\n") | NONE => prin
 
 
 fun compareResult (SOME r1) (SOME r2) = r1 = r2
+  | compareResult  NONE      NONE     = true
   | compareResult _         _         = false
 
 
@@ -91,6 +92,29 @@ fun testFindCharset () = (
 )
 
 
+fun testMany () =
+  let
+    open Scancom
+    fun scan f = (takeStr "a") >>= (fn a => f (takeStr "b") *> (takeStr "c") >>= (fn c => pure (a ^ c)))
+    val scanSkip = scan skip
+    val scanSkipMany = scan skipMany
+    val scanSkipOneOrMany = scan skipOneOrMany
+
+  in
+    testResult ( scanString scanSkip "ac" )   (SOME "ac") "skip 0";
+    testResult ( scanString scanSkip "abc" )  (SOME "ac") "skip 1";
+    testResult ( scanString scanSkip "abbc" )  NONE       "skip 2";
+
+    testResult ( scanString scanSkipMany "ac" )   (SOME "ac") "skipMany 0";
+    testResult ( scanString scanSkipMany "abc" )  (SOME "ac") "skipMany 1";
+    testResult ( scanString scanSkipMany "abbc" ) (SOME "ac") "skipMany 2";
+
+    testResult ( scanString scanSkipOneOrMany "ac" )    NONE       "skipOneOrMany 0";
+    testResult ( scanString scanSkipOneOrMany "abc" )  (SOME "ac") "skipOneOrMany 1";
+    testResult ( scanString scanSkipOneOrMany "abbc" ) (SOME "ac") "skipOneOrMany 2";
+    ()
+  end
+
 
 fun sample () = (
     testResult ( scanString (takeStr "abc")    "abcDe") (SOME "abc") "takeStr";
@@ -101,9 +125,12 @@ fun sample () = (
     parseArgTest ();
     testCSV ();
     testRedis ();
-    testTillAndWhile();
-    testFindCharset()
+    testTillAndWhile ();
+    testFindCharset ();
+    testMany ();
+    ()
 )
+
 
 
 

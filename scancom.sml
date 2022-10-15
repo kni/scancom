@@ -29,6 +29,10 @@ signature SCANCOM = sig
   val find   : ('a, 'cs) Scanner -> ('a, 'cs) Scanner
   val search : ('a, 'cs) Scanner -> ((string * 'a), 'cs) Scanner
 
+  val skip          : ('a, 'cs) Scanner -> (unit, 'cs) Scanner
+  val skipMany      : ('a, 'cs) Scanner -> (unit, 'cs) Scanner
+  val skipOneOrMany : ('a, 'cs) Scanner -> (unit, 'cs) Scanner
+
   val <$> : ('a -> 'b) * ('a, 'cs) Scanner -> ('b, 'cs) Scanner
   val >>= : ('a, 'cs) Scanner * ('a -> ('b, 'cs) Scanner) -> ('b, 'cs) Scanner
   val  *> : ('a, 'cs) Scanner * ('b, 'cs) Scanner -> ('b, 'cs) Scanner
@@ -252,6 +256,27 @@ structure Scancom : SCANCOM = struct
     in
       scan [] p strm
     end
+
+
+  (* skip 0 or 1 *)
+  fun skip p getc strm =
+    case p getc strm of
+        NONE => SOME ((), strm)
+      | SOME (_, strm) => SOME ((), strm)
+
+
+  (* skip 0 or many *)
+  fun skipMany p getc strm =
+    case p getc strm of
+        NONE => SOME ((), strm)
+      | SOME (_, strm) => skipMany p getc strm
+
+
+  (* skip 1 or many *)
+  fun skipOneOrMany p getc strm =
+    case p getc strm of
+        NONE => NONE
+      | SOME (_, strm) => skipMany p getc strm
 
 
   fun f  <$> p  = fmap f p
