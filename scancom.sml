@@ -12,6 +12,7 @@ signature SCANCOM = sig
   val takeBefore  : string -> (string * string, 'cs) Scanner
   val takeBeforeI : string -> (string * string, 'cs) Scanner
   val takeInt     : (int, 'cs) Scanner
+  val takeReal    : (real, 'cs) Scanner
   val takeN       : int -> (string, 'cs) Scanner
   val takeTill    : (char -> bool) -> (string, 'cs) Scanner
   val takeWhile   : (char -> bool) -> (string, 'cs) Scanner
@@ -130,6 +131,8 @@ structure Scancom : SCANCOM = struct
 
 
   fun takeInt s = Int.scan StringCvt.DEC s
+
+  val takeReal = Real.scan
 
 
   fun takeN n getc strm =

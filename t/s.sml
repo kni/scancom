@@ -94,7 +94,6 @@ fun testFindCharset () = (
 
 fun testMany () =
   let
-    open Scancom
     fun scan f = (takeStr "a") >>= (fn a => f (takeStr "b") *> (takeStr "c") >>= (fn c => pure (a ^ c)))
     val scanSkip = scan skip
     val scanSkipMany = scan skipMany
