@@ -115,6 +115,16 @@ fun testMany () =
   end
 
 
+fun testTheEnd () =
+  let
+    val scaner = takeStr "abc" <* theEnd
+  in
+    testResult ( scanString scaner "abc" )   (SOME "abc") "theEnd SOME";
+    testResult ( scanString scaner "abcd" )   NONE        "theEnd NONE";
+    ()
+  end
+
+
 fun sample () = (
     testResult ( scanString (takeStr "abc")    "abcDe") (SOME "abc") "takeStr";
     testResult ( scanString (takeStrI "abC")   "aBcDe") (SOME "aBc") "takeStrI";
@@ -127,6 +137,7 @@ fun sample () = (
     testTillAndWhile ();
     testFindCharset ();
     testMany ();
+    testTheEnd ();
     ()
 )
 

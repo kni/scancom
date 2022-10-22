@@ -17,6 +17,7 @@ signature SCANCOM = sig
   val takeTill    : (char -> bool) -> (string, 'cs) Scanner
   val takeWhile   : (char -> bool) -> (string, 'cs) Scanner
   val takeTail    : (string, 'cs) Scanner
+  val theEnd      : (unit, 'cs) Scanner
 
   val pure   : 'a -> ('a, 'cs) Scanner
   val fail   : ('a, 'cs) Scanner
@@ -24,11 +25,11 @@ signature SCANCOM = sig
   val bind   : ('a, 'cs) Scanner -> ('a -> ('b, 'cs) Scanner) -> ('b, 'cs) Scanner
   val apR    : ('a, 'cs) Scanner -> ('b, 'cs) Scanner -> ('b, 'cs) Scanner
   val apL    : ('a, 'cs) Scanner -> ('b, 'cs) Scanner -> ('a, 'cs) Scanner
-  val ap     : (('a -> 'b), 'cs) Scanner -> ('a, 'cs) Scanner -> ('b, 'cs) Scanner
+  val ap     : ('a -> 'b, 'cs) Scanner -> ('a, 'cs) Scanner -> ('b, 'cs) Scanner
   val choice : ('a, 'cs) Scanner list -> ('a, 'cs) Scanner
   val many   : ('a, 'cs) Scanner -> ('a list, 'cs) Scanner
   val find   : ('a, 'cs) Scanner -> ('a, 'cs) Scanner
-  val search : ('a, 'cs) Scanner -> ((string * 'a), 'cs) Scanner
+  val search : ('a, 'cs) Scanner -> (string * 'a, 'cs) Scanner
 
   val skip          : ('a, 'cs) Scanner -> (unit, 'cs) Scanner
   val skipMany      : ('a, 'cs) Scanner -> (unit, 'cs) Scanner
@@ -38,7 +39,7 @@ signature SCANCOM = sig
   val >>= : ('a, 'cs) Scanner * ('a -> ('b, 'cs) Scanner) -> ('b, 'cs) Scanner
   val  *> : ('a, 'cs) Scanner * ('b, 'cs) Scanner -> ('b, 'cs) Scanner
   val <*  : ('a, 'cs) Scanner * ('b, 'cs) Scanner -> ('a, 'cs) Scanner
-  val <*> : (('a -> 'b), 'cs) Scanner * ('a, 'cs) Scanner -> ('b, 'cs) Scanner
+  val <*> : ('a -> 'b, 'cs) Scanner * ('a, 'cs) Scanner -> ('b, 'cs) Scanner
 end
 
 structure Scancom : SCANCOM = struct
@@ -184,6 +185,12 @@ structure Scancom : SCANCOM = struct
     in
       scan [] strm
     end
+
+
+  fun theEnd getc strm =
+    case getc strm of
+        NONE => SOME ((), strm)
+      | SOME (_, _) => NONE
 
 
 
